@@ -1,43 +1,25 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>Example of plotting live data with websockets and highcharts</title>
-
-
+<title>Example of plotting live data with mqtt/websockets and highcharts</title>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-<script src="mqttws31.js" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>
 <script type="text/javascript">
-/*
-by @bordignon on twitter
-Feb 2014
-
-Simple example of plotting live mqtt/websockets data using highcharts.
-
-public broker and topic you can use for testing.
-
-	var MQTTbroker = 'broker.mqttdashboard.com';
-	var MQTTport = 8000;
-	var MQTTsubTopic = 'dcsquare/cubes/#'; //works with wildcard # and + topics dynamically now
-
-*/
-
 //settings BEGIN
-	var MQTTbroker = 'broker.mqttdashboard.com';
-	var MQTTport = 8000;
-	var MQTTsubTopic = 'dcsquare/cubes/#'; //works with wildcard # and + topics dynamically now
+	var MQTTbroker = '127.0.0.1';
+	var MQTTport = 9001;
+	var MQTTsubTopic = '#'; //works with wildcard # and + topics dynamically now
 //settings END
 
-	var chart; // global variuable for chart
+	var chart; // global variable for chart
 	var dataTopics = new Array();
 
 //mqtt broker 
-	var client = new Paho.MQTT.Client(MQTTbroker, MQTTport,
-				"myclientid_" + parseInt(Math.random() * 100, 10));
+	var client = new Paho.MQTT.Client(MQTTbroker, MQTTport, "myclientid_" + parseInt(Math.random() * 100, 10));
 	client.onMessageArrived = onMessageArrived;
 	client.onConnectionLost = onConnectionLost;
 	//connect to broker is at the bottom of the init() function !!!!
 	
-
 //mqtt connecton options including the mqtt broker subscriptions
 	var options = {
 		timeout: 3,
@@ -109,7 +91,6 @@ public broker and topic you can use for testing.
 
 	};
 
-
 //this adds the plots to the chart	
     function plot(point, chartno) {
     	console.log(point);
@@ -158,12 +139,9 @@ public broker and topic you can use for testing.
 <script src="http://code.highcharts.com/stock/modules/exporting.js"></script>
 
 </head>
-<body>
 <body onload="init();"><!--Start the javascript ball rolling and connect to the mqtt broker-->
 
+    <div id="container" style="height: 500px; min-width: 500px"></div><!-- this the placeholder for the chart-->
 
-
-<div id="container" style="height: 500px; min-width: 500px"></div><!-- this the placeholder for the chart-->
-
-	</body>
+</body>
 </html>
