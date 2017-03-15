@@ -2,8 +2,8 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>Example of plotting live data with mqtt/websockets and highcharts</title>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.2/mqttws31.js" type="text/javascript"></script>
 <script type="text/javascript">
 //settings BEGIN
 	var MQTTbroker = '127.0.0.1';
@@ -42,33 +42,42 @@
 
 //what is done when a message arrives from the broker
 	function onMessageArrived(message) {
-		console.log(message.destinationName, '',message.payloadString);
 
-		//check if it is a new topic, if not add it to the array
-		if (dataTopics.indexOf(message.destinationName) < 0){
-		    
-		    dataTopics.push(message.destinationName); //add new topic to array
-		    var y = dataTopics.indexOf(message.destinationName); //get the index no
-		    
-		    //create new data series for the chart
-			var newseries = {
-		            id: y,
-		            name: message.destinationName,
-		            data: []
-		            };
+		try {
 
-			chart.addSeries(newseries); //add the series
-		    
-		    };
-		 
-		var y = dataTopics.indexOf(message.destinationName); //get the index no of the topic from the array
-		var myEpoch = new Date().getTime(); //get current epoch time
-		var thenum = message.payloadString.replace( /^\D+/g, ''); //remove any text spaces from the message
-		var plotMqtt = [myEpoch, Number(thenum)]; //create the array
-		if (isNumber(thenum)) { //check if it is a real number and not text
-			console.log('is a propper number, will send to chart.')
-			plot(plotMqtt, y);	//send it to the plot function
-		};
+			console.log(message.destinationName, '',message.payloadString);
+
+			//check if it is a new topic, if not add it to the array
+			if (dataTopics.indexOf(message.destinationName) < 0){
+			    
+			    dataTopics.push(message.destinationName); //add new topic to array
+			    var y = dataTopics.indexOf(message.destinationName); //get the index no
+			    
+			    //create new data series for the chart
+				var newseries = {
+			            id: y,
+			            name: message.destinationName,
+			            data: []
+			            };
+
+				chart.addSeries(newseries); //add the series
+			    
+			    };
+			 
+			var y = dataTopics.indexOf(message.destinationName); //get the index no of the topic from the array
+			var myEpoch = new Date().getTime(); //get current epoch time
+			var thenum = message.payloadString.replace( /^\D+/g, ''); //remove any text spaces from the message
+			var plotMqtt = [myEpoch, Number(thenum)]; //create the array
+			if (isNumber(thenum)) { //check if it is a real number and not text
+				console.log('is a propper number, will send to chart.')
+				plot(plotMqtt, y);	//send it to the plot function
+			};
+
+		  }
+		  catch(err) {
+		    console.log(err);
+		  }
+
 	};
 
 //check if a real number	
@@ -111,7 +120,7 @@
 	            defaultSeriesType: 'spline'
 	        },
 	        title: {
-	            text: 'Plotting Live websockets data from a MQTT topic'
+	            text: 'Plotting Live websockets data from an MQTT topic'
 	        },
 	        subtitle: {
                                 text: 'broker: ' + MQTTbroker + ' | port: ' + MQTTport + ' | topic : ' + MQTTsubTopic
